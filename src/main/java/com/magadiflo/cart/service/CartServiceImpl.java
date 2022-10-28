@@ -36,6 +36,9 @@ public class CartServiceImpl implements ICartService {
 	private URI getUri(String serviceName) {
 		List<ServiceInstance> instances = this.discoveryClient.getInstances(serviceName);
 		if (instances != null && instances.size() > 0) {
+			// Hasta el momento solo generamos una instancia del microservicio productos, 
+			// ya que el puerto está definido de forma explícita. Por eso que de la lista
+			// obtenemos la primera y única instancia que nos devuelve
 			return instances.get(0).getUri();
 		}
 		return null;
