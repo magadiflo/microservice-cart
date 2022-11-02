@@ -6,6 +6,7 @@ public class Product {
 	private String name;
 	private Double price;
 	private String description;
+	private Integer port;
 
 	public Integer getId() {
 		return id;
@@ -39,6 +40,14 @@ public class Product {
 		this.description = description;
 	}
 
+	public Integer getPort() {
+		return port;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -50,6 +59,8 @@ public class Product {
 		builder.append(price);
 		builder.append(", description=");
 		builder.append(description);
+		builder.append(", port=");
+		builder.append(port);
 		builder.append("]");
 		return builder.toString();
 	}
