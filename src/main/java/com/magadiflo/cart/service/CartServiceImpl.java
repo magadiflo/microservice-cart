@@ -26,6 +26,7 @@ public class CartServiceImpl implements ICartService {
 	private final RestTemplate client;
 	private final DiscoveryClient discoveryClient;
 	private static final Logger LOGGER = LoggerFactory.getLogger(CartServiceImpl.class);
+	private static final String URL_PRODUCTS = "http://microservice-products";
 
 	public CartServiceImpl(RestTemplate client, DiscoveryClient discoveryClient) {
 		this.client = client;
@@ -61,7 +62,7 @@ public class CartServiceImpl implements ICartService {
 	@Override
 	public List<Item> findAll() {
 		ResponseEntity<Product[]> response;
-		response = this.client.getForEntity(this.urlProducts().concat("/api/v1/products"), Product[].class);
+		response = this.client.getForEntity(URL_PRODUCTS.concat("/api/v1/products"), Product[].class);
 
 		return Arrays.asList(response.getBody()).stream().map(product -> new Item(product, 1))
 				.collect(Collectors.toList());
@@ -69,7 +70,7 @@ public class CartServiceImpl implements ICartService {
 
 	@Override
 	public Item findById(Integer id, Integer quantity) {
-		ResponseEntity<Product> response = this.client.getForEntity(this.urlProducts().concat("/api/v1/products/{id}"),
+		ResponseEntity<Product> response = this.client.getForEntity(URL_PRODUCTS.concat("/api/v1/products/{id}"),
 				Product.class, this.pathVariable(id));
 
 		return new Item(response.getBody(), quantity);
@@ -80,7 +81,7 @@ public class CartServiceImpl implements ICartService {
 		HttpEntity<Product> body = new HttpEntity<Product>(product);
 
 		ResponseEntity<Product> response;
-		response = this.client.exchange(this.urlProducts().concat("/api/v1/products"), HttpMethod.POST, body,
+		response = this.client.exchange(URL_PRODUCTS.concat("/api/v1/products"), HttpMethod.POST, body,
 				Product.class);
 
 		return response.getBody();
@@ -88,7 +89,7 @@ public class CartServiceImpl implements ICartService {
 
 	@Override
 	public void delete(Integer id) {
-		this.client.delete(this.urlProducts().concat("/api/v1/products/{id}"), this.pathVariable(id));
+		this.client.delete(URL_PRODUCTS.concat("/api/v1/products/{id}"), this.pathVariable(id));
 	}
 
 }
