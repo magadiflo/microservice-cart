@@ -2,6 +2,9 @@ package com.magadiflo.cart.resource;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,10 +23,14 @@ import com.magadiflo.cart.service.ICartService;
 @RequestMapping(path = "/carts")
 public class CartResource {
 
-	private final ICartService cartService;
+	private static final Logger LOGGER = LoggerFactory.getLogger(CartResource.class);
 
-	public CartResource(ICartService cartService) {
+	private final ICartService cartService;
+	private final CircuitBreakerFactory cbFactory;
+
+	public CartResource(ICartService cartService, CircuitBreakerFactory cbFactory) {
 		this.cartService = cartService;
+		this.cbFactory = cbFactory;
 	}
 
 	@GetMapping
@@ -33,7 +40,8 @@ public class CartResource {
 
 	@GetMapping(path = "/product/{id}/quantity/{quantity}")
 	public Item showItem(@PathVariable Integer id, @PathVariable Integer quantity) {
-		return this.cartService.findById(id, quantity);
+		return this.cbFactory.create("cards") // cards, nombre que le damos al corto circuito
+				.run(() -> this.cartService.findById(id, quantity), t -> this.alternativeMethod(id, quantity, t));
 	}
 
 	@PostMapping(path = "/product")
@@ -46,6 +54,20 @@ public class CartResource {
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	public void deleteProduct(@PathVariable Integer id) {
 		this.cartService.delete(id);
+	}
+
+	private Item alternativeMethod(Integer id, Integer quantity, Throwable t) {
+		LOGGER.info("Applying alternative method. The error produced is: {}", t.getMessage());
+		Product product = new Product();
+		product.setId(null);
+		product.setName("Default product");
+		product.setPrice(0D);
+
+		Item item = new Item();
+		item.setProduct(product);
+		item.setQuantity(0);
+
+		return item;
 	}
 
 }
