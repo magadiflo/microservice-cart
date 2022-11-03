@@ -45,9 +45,11 @@ public class AppConfig {
 							.failureRateThreshold(50) // Umbral de la taza de fallos. Por defecto es 50%. Si el 50% de peticiones falla, pasará a estado abierto (cortocircuito)
 							.waitDurationInOpenState(Duration.ofSeconds(10L))// Tiempo de espera en estado abiero. Por defecto son 60 segundos
 							.permittedNumberOfCallsInHalfOpenState(5) // Número de llamadas permitidas en estado semi abierto. Por defecto son 10 request
+							.slowCallRateThreshold(50) // Porcentaje del umbral de llamadas lentas. Por defecto es 100%
+							.slowCallDurationThreshold(Duration.ofSeconds(2L)) // Una llamada es lenta si la duración del request es mayor que lo definido en esta línea
 							.build())
 					.timeLimiterConfig(TimeLimiterConfig.custom()
-							.timeoutDuration(Duration.ofSeconds(2l)) // Duración del timeOut permitido. Por defecto es 1 segundo. Si se pasa del valor definido se va a considerar como un error, es decir se considerará como parte de la taza de fallos
+							.timeoutDuration(Duration.ofSeconds(6l)) // Duración del timeOut permitido. Por defecto es 1 segundo. Si se pasa del valor definido se va a considerar como un error, es decir se considerará como parte de la taza de fallos
 							.build()) 
 					.build();
 		});
