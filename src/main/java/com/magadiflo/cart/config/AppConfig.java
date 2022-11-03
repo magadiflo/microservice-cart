@@ -46,7 +46,9 @@ public class AppConfig {
 							.waitDurationInOpenState(Duration.ofSeconds(10L))// Tiempo de espera en estado abiero. Por defecto son 60 segundos
 							.permittedNumberOfCallsInHalfOpenState(5) // Número de llamadas permitidas en estado semi abierto. Por defecto son 10 request
 							.build())
-					.timeLimiterConfig(TimeLimiterConfig.ofDefaults()) //Por el momento, lo dejampos en valores por defecto
+					.timeLimiterConfig(TimeLimiterConfig.custom()
+							.timeoutDuration(Duration.ofSeconds(2l)) // Duración del timeOut permitido. Por defecto es 1 segundo. Si se pasa del valor definido se va a considerar como un error, es decir se considerará como parte de la taza de fallos
+							.build()) 
 					.build();
 		});
 	}
